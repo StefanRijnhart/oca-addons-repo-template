@@ -86,3 +86,13 @@ docs/_build/
 
 # OCA rules
 !static/lib/
+
+# Gitpod
+odoo-15.0
+enterprise-15.0
+odoo-15.0/
+enterprise-15.0/
+
+/.idea/
+.idea/
+.idea
