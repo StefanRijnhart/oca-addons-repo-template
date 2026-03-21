@@ -30,14 +30,14 @@ odoo_version:
 
 org_slug:
   type: str
-  default: OCA
+  default: EzSoftware2015
   help:
     What's the organization slug? If you are creating
     https://github.com/OCA/server-tools, then write "OCA" here.
 
 org_name:
   type: str
-  default: Odoo Community Association (OCA)
+  default: EZ Software NV
   help:
     Tell me the Organization name. It's supposed to be human-readable. It will be used
     in the author key of the __manifest__ files.
@@ -45,14 +45,17 @@ org_name:
 repo_slug:
   type: str
   help:
-    What's the repo slug? If you are creating https://github.com/OCA/server-tools, then
-    write "server-tools" here.
+    What's the repo slug? If you are creating https://github.com/EzSoftware2015/odoo17klazm, then
+    write "odoo17klazm" here.
 
+# Custom: don't ask for human readable repository description
 repo_name:
   type: str
+  default: "{{ repo_slug }}"
   help:
     Tell me the project name. It's supposed to be human-readable. So, server-tools
     project could be named like "Tools for server environment(s)"
+  when: false
 
 repo_website:
   type: str
@@ -61,18 +64,24 @@ repo_website:
     Tell me the project website. It will be used in the website key of the __manifest__
     files.
 
+# Custom: don't ask for human readable project description
 repo_description:
   type: str
+  default: "Customizations for {{ repo_slug }}"
   help: Please write a short description about what this repo is about.
+  when: false
 
+# Custom: CI template is managed manually
 ci:
   type: str
-  default: GitHub
+  default: None
   choices:
-    - Travis
     - GitHub
+    - None
   help: Which CI system to use ?
+  when: false
 
+# Custom: irrelevant if CI is managed manually
 odoo_test_flavor:
   type: str
   default: |-
@@ -86,6 +95,7 @@ odoo_test_flavor:
     - OCB
     - Both
   help: Which Odoo flavor should be used for CI tests ?
+  when: false
 
 travis_apt_sources:
   type: yaml
@@ -116,31 +126,37 @@ dependency_installation_mode:
   help: Choose how to install module dependencies.
   when: *ci_is_travis
 
+# Custom: requirements.txt is managed manually
 use_pyproject_toml:
-  default: "{% if odoo_version < 17.0 -%}no{% else %}yes{% endif %}"
+  default: "{% if odoo_version < 17.0 -%}no{% else %}no{% endif %}"
   type: bool
   help: Use pyproject.toml instead of setup.py.
-  when: "{{ odoo_version >= 14.0 }}"
+  when: false
 
+# Custom: requirements.txt is managed manually
 generate_requirements_txt:
-  default: yes
+  default: no
   type: bool
   help:
     Generate requirements.txt from addons manifests and optional overrides in setup.py
     files.
+  when: false
 
+# Custom: always uses default
 use_ruff:
   default: "{% if odoo_version < 17.0 -%}no{% else %}yes{% endif %}"
   type: bool
   help: Use ruff and ruff-format instead of flake8, autoflake, pyupgrade, isort, black.
-  when: "{{ odoo_version >= 14.0 }}"
+  when: false
 
+# Custom: don't *ask* for custom ruff rules
 additional_ruff_rules:
   type: yaml
   default: []
   help: List of additional ruff rules to enable.
-  when: "{{ use_ruff }}"
+  when: false
 
+# Custom: irrelevant
 rebel_module_groups:
   type: yaml
   default: []
@@ -152,48 +168,61 @@ rebel_module_groups:
     commas, which could be misinterpreted by YAML.
 
     Example: ["rebel_module_1,rebel_module_2", even_more_rebel_module]
+  when: false
 
+# Custom: irrelevant if CI files are managed manually
 include_wkhtmltopdf:
   type: bool
   default: no
   help:
     Do you need to install wkhtmltopdf? Usually only needed if you're going to test PDF
     report generation.
+  when: false
 
+# Custom: feature of OCA CI (managed manually)
 enable_checklog_odoo:
   type: bool
+  default: no
   default: "{% if odoo_version < 18.0 -%}no{% else %}yes{% endif %}"
   help: Do you want to make tests fail on warnings?
+  when: false
 
+# Custom: we don't apply maturity levels to our modules
 github_enforce_dev_status_compatibility:
   type: bool
   default: yes
   help: GitHub action checks the minimum development status?
-  when: &ci_is_github "{{ ci == 'GitHub' }}"
+  when: false
 
+# Custom: pragmatic approach to inhouse license combination
 github_check_license:
   type: bool
-  default: yes
+  default: no
   help: GitHub action checks the manifest license?
-  when: *ci_is_github
+  when: false
 
+# Custom: no codecov
 github_enable_codecov:
   type: bool
-  default: yes
+  default: no
   help: GitHub action runs codecov/codecov-action?
-  when: *ci_is_github
+  when: false
 
+# Custom: no makepot
 github_enable_makepot:
   type: bool
-  default: yes
+  default: no
   help: GitHub action updates .pot files?
-  when: *ci_is_github
+  when: false
 
+# Custom: no marking PRs as stale
 github_enable_stale_action:
   type: bool
-  default: yes
+  default: no
   help: Create GitHub 'stale' action?
+  when: false
 
+# Custom: don't *ask* for custom environment variables
 github_ci_extra_env:
   type: yaml
   default: {}
@@ -201,8 +230,10 @@ github_ci_extra_env:
     Any extra environment variables to inject into the CI tests
 
     Example: {"KEY": "VALUE"}
-  when: *ci_is_github
+  when: false
 
+# Custom: we don't compose README from individual fragments
 convert_readme_fragments_to_markdown:
-  default: "{% if odoo_version < 17.0 -%}no{% else %}yes{% endif %}"
+  default: no
   type: bool
+  when: false

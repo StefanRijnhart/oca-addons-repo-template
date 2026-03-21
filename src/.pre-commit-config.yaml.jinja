@@ -141,6 +141,14 @@ exclude: |
   /build/|/dist/|
   # Ignore test files in addons
   /tests/samples/.*|
+  # Custom ignores
+  ^quatra_website/migrations/.*/exported_views/|
+  /tests/fixtures/.*|
+  /tests/test_files/.*|
+  # Exclude temporary local copy of oca-unmerged
+  ^oca-unmerged/|
+  # Don't reformat monkeypatches
+  /monkeypatches/|
   # You don't usually want a bot to modify your legal texts
   (LICENSE.*|COPYING.*)
 default_language_version:
@@ -284,7 +292,7 @@ repos:
           - --settings=.
         exclude: /__init__\.py$
   {%- endif %}
-  {%- if not use_pyproject_toml %}
+  {%- if not use_pyproject_toml and false %}
   - repo: https://github.com/acsone/setuptools-odoo
     rev: {{ repo_rev.setuptools_odoo }}
     hooks:
